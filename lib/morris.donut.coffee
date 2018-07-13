@@ -122,6 +122,11 @@ class Morris.Donut extends Morris.EventEmitter
 
   # @private
   setLabels: (label1, label2) ->
+    if @options.exchangeLabel
+      l1 = label1
+      l2 = label2
+      label1 = l2
+      label2 = l1
     inner = (Math.min(@el.width() / 2, @el.height() / 2) - 10) * 2 / 3
     maxWidth = 1.8 * inner
     maxHeightTop = inner / 2

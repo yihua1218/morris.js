@@ -2088,7 +2088,13 @@ Licensed under the BSD-2-Clause License.
     };
 
     Donut.prototype.setLabels = function(label1, label2) {
-      var inner, maxHeightBottom, maxHeightTop, maxWidth, text1bbox, text1scale, text2bbox, text2scale;
+      var inner, l1, l2, maxHeightBottom, maxHeightTop, maxWidth, text1bbox, text1scale, text2bbox, text2scale;
+      if (this.options.exchangeLabel) {
+        l1 = label1;
+        l2 = label2;
+        label1 = l2;
+        label2 = l1;
+      }
       inner = (Math.min(this.el.width() / 2, this.el.height() / 2) - 10) * 2 / 3;
       maxWidth = 1.8 * inner;
       maxHeightTop = inner / 2;
