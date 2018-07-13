@@ -55,6 +55,12 @@ class Morris.Donut extends Morris.EventEmitter
 
     @setData options.data
 
+    if typeof @options.defaultLabel != 'undefined' and
+    @data[@options.defaultLabel]
+      row = @data[@options.defaultLabel]
+      @setLabels(row.label, @options.formatter(row.value, row))
+      s.deselect() for s in @segments
+
   # Clear and redraw the chart.
   redraw: ->
     @raphael.clear()
@@ -109,14 +115,16 @@ class Morris.Donut extends Morris.EventEmitter
   select: (idx) =>
     s.deselect() for s in @segments
     segment = @segments[idx]
-    segment.select()
-    row = @data[idx]
 
-    if typeof @options.lockLabel != 'undefined' and
-    @data[@options.lockLabel]
-      row = @data[@options.lockLabel]
+    if segment
+      segment.select()
+      row = @data[idx]
 
-    @setLabels(row.label, @options.formatter(row.value, row))
+      if typeof @options.lockLabel != 'undefined' and
+      @data[@options.lockLabel]
+        row = @data[@options.lockLabel]
+
+      @setLabels(row.label, @options.formatter(row.value, row))
 
 
 

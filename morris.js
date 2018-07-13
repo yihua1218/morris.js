@@ -1977,7 +1977,8 @@ Licensed under the BSD-2-Clause License.
       this.resizeHandler = __bind(this.resizeHandler, this);
       this.select = __bind(this.select, this);
       this.click = __bind(this.click, this);
-      var _this = this;
+      var row, s, _i, _len, _ref,
+        _this = this;
       if (!(this instanceof Morris.Donut)) {
         return new Morris.Donut(options);
       }
@@ -2003,6 +2004,15 @@ Licensed under the BSD-2-Clause License.
         });
       }
       this.setData(options.data);
+      if (typeof this.options.defaultLabel !== 'undefined' && this.data[this.options.defaultLabel]) {
+        row = this.data[this.options.defaultLabel];
+        this.setLabels(row.label, this.options.formatter(row.value, row));
+        _ref = this.segments;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          s = _ref[_i];
+          s.deselect();
+        }
+      }
     }
 
     Donut.prototype.redraw = function() {
@@ -2079,12 +2089,14 @@ Licensed under the BSD-2-Clause License.
         s.deselect();
       }
       segment = this.segments[idx];
-      segment.select();
-      row = this.data[idx];
-      if (typeof this.options.lockLabel !== 'undefined' && this.data[this.options.lockLabel]) {
-        row = this.data[this.options.lockLabel];
+      if (segment) {
+        segment.select();
+        row = this.data[idx];
+        if (typeof this.options.lockLabel !== 'undefined' && this.data[this.options.lockLabel]) {
+          row = this.data[this.options.lockLabel];
+        }
+        return this.setLabels(row.label, this.options.formatter(row.value, row));
       }
-      return this.setLabels(row.label, this.options.formatter(row.value, row));
     };
 
     Donut.prototype.setLabels = function(label1, label2) {
