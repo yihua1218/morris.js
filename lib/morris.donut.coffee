@@ -111,6 +111,11 @@ class Morris.Donut extends Morris.EventEmitter
     segment = @segments[idx]
     segment.select()
     row = @data[idx]
+
+    if typeof @options.lockLabel != 'undefined' and
+    @data[@options.lockLabel]
+      row = @data[@options.lockLabel]
+
     @setLabels(row.label, @options.formatter(row.value, row))
 
 
