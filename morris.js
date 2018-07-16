@@ -2016,7 +2016,7 @@ Licensed under the BSD-2-Clause License.
     }
 
     Donut.prototype.redraw = function() {
-      var C, cx, cy, i, idx, last, max_value, min, next, seg, total, value, w, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
+      var C, cx, cy, i, idx, labelFontSizeText1, labelFontSizeText2, last, max_value, min, next, seg, total, value, w, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
       this.raphael.clear();
       cx = this.el.width() / 2;
       cy = this.el.height() / 2;
@@ -2044,8 +2044,16 @@ Licensed under the BSD-2-Clause License.
         last = next;
         idx += 1;
       }
-      this.text1 = this.drawEmptyDonutLabel(cx, cy - 10, this.options.labelColor, 15, 800);
-      this.text2 = this.drawEmptyDonutLabel(cx, cy + 10, this.options.labelColor, 14);
+      labelFontSizeText1 = 15;
+      labelFontSizeText2 = 14;
+      if (this.options.labelFontSize && this.options.labelFontSize.text1) {
+        labelFontSizeText1 = this.options.labelFontSize.text1;
+      }
+      if (this.options.labelFontSize && this.options.labelFontSize.text2) {
+        labelFontSizeText2 = this.options.labelFontSize.text2;
+      }
+      this.text1 = this.drawEmptyDonutLabel(cx, cy - 10, this.options.labelColor, labelFontSizeText1, 800);
+      this.text2 = this.drawEmptyDonutLabel(cx, cy + 10, this.options.labelColor, labelFontSizeText2);
       max_value = Math.max.apply(Math, this.values);
       idx = 0;
       _ref2 = this.values;
