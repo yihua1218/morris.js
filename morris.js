@@ -1044,12 +1044,21 @@ Licensed under the BSD-2-Clause License.
           label.transform("t" + offset + ",0...");
         }
         labelBox = label.getBBox();
-        if (((prevLabelMargin == null) || prevLabelMargin >= labelBox.x + labelBox.width || (prevAngleMargin != null) && prevAngleMargin >= labelBox.x) && labelBox.x >= 0 && (labelBox.x + labelBox.width) < _this.el.width()) {
+        if (!_this.options.drawXAxisReversed && (((prevLabelMargin == null) || prevLabelMargin >= labelBox.x + labelBox.width || (prevAngleMargin != null) && prevAngleMargin >= labelBox.x) && labelBox.x >= 0 && (labelBox.x + labelBox.width) < _this.el.width())) {
           if (_this.options.xLabelAngle !== 0) {
             margin = 1.25 * _this.options.gridTextSize / Math.sin(_this.options.xLabelAngle * Math.PI / 180.0);
             prevAngleMargin = labelBox.x - margin;
           }
           prevLabelMargin = labelBox.x - _this.options.xLabelMargin;
+          if (_this.options.verticalGrid === true) {
+            return _this.drawVerticalGridLine(xpos);
+          }
+        } else if (_this.options.drawXAxisReversed && (((prevLabelMargin == null) || labelBox.x >= prevLabelMargin || (prevAngleMargin != null) && prevAngleMargin >= labelBox.x) && labelBox.x >= 0 && (labelBox.x + labelBox.width) < _this.el.width())) {
+          if (_this.options.xLabelAngle !== 0) {
+            margin = 1.25 * _this.options.gridTextSize / Math.sin(_this.options.xLabelAngle * Math.PI / 180.0);
+            prevAngleMargin = labelBox.x - margin;
+          }
+          prevLabelMargin = labelBox.x + labelBox.width + _this.options.xLabelMargin;
           if (_this.options.verticalGrid === true) {
             return _this.drawVerticalGridLine(xpos);
           }
@@ -1086,7 +1095,9 @@ Licensed under the BSD-2-Clause License.
           return _results;
         }).call(this);
       }
-      labels.reverse();
+      if (!this.options.drawXAxisReversed) {
+        labels.reverse();
+      }
       for (_i = 0, _len = labels.length; _i < _len; _i++) {
         l = labels[_i];
         drawLabel(l[0], l[1]);
@@ -1328,7 +1339,7 @@ Licensed under the BSD-2-Clause License.
     };
 
     Line.prototype.pointGrowSeries = function(index) {
-      if (this.pointSizeForSeries(index) === 0) {
+      if (!this.options.pointForHover && this.pointSizeForSeries(index) === 0) {
         return;
       }
       return Raphael.animation({

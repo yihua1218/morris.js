@@ -170,15 +170,26 @@ class Morris.Line extends Morris.Grid
         label.transform("t#{offset},0...")
       # try to avoid overlaps
       labelBox = label.getBBox()
-      if (not prevLabelMargin? or
+      if not @options.drawXAxisReversed and ((not prevLabelMargin? or
           prevLabelMargin >= labelBox.x + labelBox.width or
           prevAngleMargin? and prevAngleMargin >= labelBox.x) and
-         labelBox.x >= 0 and (labelBox.x + labelBox.width) < @el.width()
+         labelBox.x >= 0 and (labelBox.x + labelBox.width) < @el.width())
         if @options.xLabelAngle != 0
           margin = 1.25 * @options.gridTextSize /
             Math.sin(@options.xLabelAngle * Math.PI / 180.0)
           prevAngleMargin = labelBox.x - margin
         prevLabelMargin = labelBox.x - @options.xLabelMargin
+        if @options.verticalGrid is true
+          @drawVerticalGridLine(xpos)
+      else if @options.drawXAxisReversed and ((not prevLabelMargin? or
+          labelBox.x >= prevLabelMargin or
+          prevAngleMargin? and prevAngleMargin >= labelBox.x) and
+         labelBox.x >= 0 and (labelBox.x + labelBox.width) < @el.width())
+        if @options.xLabelAngle != 0
+          margin = 1.25 * @options.gridTextSize /
+            Math.sin(@options.xLabelAngle * Math.PI / 180.0)
+          prevAngleMargin = labelBox.x - margin
+        prevLabelMargin = labelBox.x +  labelBox.width + @options.xLabelMargin
         if @options.verticalGrid is true
           @drawVerticalGridLine(xpos)
 
@@ -197,7 +208,10 @@ class Morris.Line extends Morris.Grid
       labels = ([row.label, row.x] for row in @options.customLabels)
     else
       labels = ([row.label, row.x] for row in @data)
-    labels.reverse()
+    
+    if not @options.drawXAxisReversed
+      labels.reverse()
+
     for l in labels
       drawLabel(l[0], l[1])
 
@@ -392,7 +406,7 @@ class Morris.Line extends Morris.Grid
 
   # @private
   pointGrowSeries: (index) ->
-    if @pointSizeForSeries(index) is 0
+    if not @options.pointForHover and  @pointSizeForSeries(index) is 0
       return
     Raphael.animation r: @pointSizeForSeries(index) + 3, 25, 'linear'
 

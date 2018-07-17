@@ -1,0 +1,66 @@
+<!doctype html>
+<head>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js"></script>
+  <script src="../morris.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/prettify/r224/prettify.min.js"></script>
+  <script src="lib/example.js"></script>
+  <link rel="stylesheet" href="lib/example.css">
+  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/prettify/r224/prettify.min.css">
+  <link rel="stylesheet" href="../morris.css">
+</head>
+<body>
+<h1>Hover shows point and draw X-axis label from 0</h1>
+<div id="graph"></div>
+<pre id="code" class="prettyprint linenums">
+// Use Morris.Area instead of Morris.Line
+Morris.Line({
+	element: 'graph', 
+	drawXAxisReversed: true,
+	pointForHover: true,
+	data: [
+	    { period:"00:00", usage: 50 },
+	    { period:"01:00", usage: 75 },
+	    { period:"02:00", usage: 30 },
+	    { period:"03:00", usage: 50 },
+	    { period:"04:00", usage: 75 },
+	    { period:"05:00", usage: 50 },
+	    { period:"06:00", usage: 75 },
+	    { period:"07:00", usage: 100 },
+	    { period:"08:00", usage: 50 },
+	    { period:"09:00", usage: 75 },
+	    { period:"10:00", usage: 50 },
+	    { period:"11:00", usage: 75 },
+	    { period:"12:00", usage: 30 },
+	    { period:"13:00", usage: 50 },
+	    { period:"14:00", usage: 75 },
+	    { period:"15:00", usage: 50 },
+	    { period:"16:00", usage: 75 },
+	    { period:"17:00", usage: 100 },
+	    { period:"18:00", usage: 50 },
+	    { period:"19:00", usage: 75 },
+	    { period:"20:00", usage: 75 },
+	    { period:"21:00", usage: 50 },
+	    { period:"22:00", usage: 75 },
+	    { period:"23:00", usage: 100 },
+	  ], 
+	xkey:'period', 
+	ykeys:['usage'], 
+	labels:['Usage'],
+	lineColors:['#22b7db'],
+	fillOpacity: ['0.1'],
+	pointFillColors: ['#ffffff'],
+	pointStrokeColors: ['#999999'],
+	behaveLikeLine: true,
+	gridLineColor: '#eef0f2',
+	gridTextColor: '#afafaf',
+	hideHover: 'auto',
+	lineWidth: '3px',
+	postUnits: 'MB',
+	pointSize: 0,
+	parseTime: false,
+	resize: true, //defaulted to true
+
+});
+</pre>
+</body>
