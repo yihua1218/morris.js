@@ -1,0 +1,84 @@
+<!doctype html>
+<head>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js"></script>
+  <script src="../morris.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/prettify/r224/prettify.min.js"></script>
+  <script src="lib/example.js"></script>
+  <link rel="stylesheet" href="lib/example.css">
+  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/prettify/r224/prettify.min.css">
+  <link rel="stylesheet" href="../morris.css">
+</head>
+<body>
+<h1>Bar charts</h1>
+<div id="graph"></div>
+<pre id="code" class="prettyprint linenums">
+// Use Morris.Bar
+
+//for finding bar chart's min and max
+function min_and_max(json_data) {
+    var min = Number.MAX_VALUE;
+    var max = Number.MIN_VALUE;
+    for (var data_key in json_data) {
+        var entry = json_data[data_key]
+        for(var key in entry) {
+            var x = entry[key];
+            if (!isNaN(x)) { 
+                if (x < min) {min = x;}
+                else if (x > max) {max = x;}
+            }
+        }
+    }
+    return {'min': min, 'max': max};
+}
+
+var barData= [
+    { period:"00:00", usage: 50 },
+    { period:"03:00", usage: 75 },
+    { period:"06:00", usage: 193 },
+    { period:"09:00", usage: 50 },
+    { period:"12:00", usage: 75 },
+    { period:"15:00", usage: 50 },
+    { period:"18:00", usage: 158 },
+    { period:"21:00", usage: 100 },
+    { period:"00:00", usage: 50 },
+    { period:"03:00", usage: 75 },
+    { period:"06:00", usage: 30 },
+    { period:"09:00", usage: 80 },
+    { period:"12:00", usage: 75 },
+    { period:"15:00", usage: 29 },
+    { period:"18:00", usage: 75 },
+    { period:"21:00", usage: 100 },
+    { period:"00:00", usage: 30 },
+    { period:"03:00", usage: 75 },
+    { period:"06:00", usage: 30 },
+    { period:"09:00", usage: 20 },
+    { period:"12:00", usage: 75 },
+    { period:"15:00", usage: 50 },
+    { period:"18:00", usage: 75 },
+    { period:"21:00", usage: 101 },
+];
+
+var limits = min_and_max(barData);
+Morris.Bar({
+	  barGap:1,
+	  barSizeRatio:0.4,
+	  element: 'graph',
+	  data: barData,
+	  xkey: 'period',
+	  ykeys: ['usage'],
+	  labels: ['Clients'],
+	  hideHover: 'auto',
+      resize: true, //defaulted to true
+      gridLineColor: '#eeeeee',
+      barColors: ['#22b7db'],
+      postUnits: '',
+      drawXAxisReversed: true,
+      barColors: function (row, series, type) {
+    	  if(row.y==limits['max']) return "#E61B5A";
+    	  else if(row.y==limits['min']) return "#F59D24";
+    	  else return "#22b7DB";
+    },
+});
+</pre>
+</body>

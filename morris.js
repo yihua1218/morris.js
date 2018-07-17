@@ -1683,7 +1683,11 @@ Licensed under the BSD-2-Clause License.
       prevAngleMargin = null;
       _results = [];
       for (i = _i = 0, _ref = this.data.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-        row = this.data[this.data.length - 1 - i];
+        if (this.options.drawXAxisReversed) {
+          row = this.data[i];
+        } else {
+          row = this.data[this.data.length - 1 - i];
+        }
         if (!this.options.horizontal) {
           label = this.drawXAxisLabel(row._x, basePos, row.label);
         } else {
@@ -1711,7 +1715,17 @@ Licensed under the BSD-2-Clause License.
           size = labelBox.height;
           maxSize = this.el.height();
         }
-        if (((prevLabelMargin == null) || prevLabelMargin >= startPos + size || (prevAngleMargin != null) && prevAngleMargin >= startPos) && startPos >= 0 && (startPos + size) < maxSize) {
+        if (this.options.drawXAxisReversed && ((prevLabelMargin == null) || startPos >= prevLabelMargin || (prevAngleMargin != null) && prevAngleMargin >= startPos) && startPos >= 0 && (startPos + size) < maxSize) {
+          if (angle !== 0) {
+            margin = 1.25 * this.options.gridTextSize / Math.sin(angle * Math.PI / 180.0);
+            prevAngleMargin = startPos - margin;
+          }
+          if (!this.options.horizontal) {
+            _results.push(prevLabelMargin = startPos + size + this.options.xLabelMargin);
+          } else {
+            _results.push(prevLabelMargin = startPos);
+          }
+        } else if (!this.options.drawXAxisReversed && ((prevLabelMargin == null) || prevLabelMargin >= startPos + size || (prevAngleMargin != null) && prevAngleMargin >= startPos) && startPos >= 0 && (startPos + size) < maxSize) {
           if (angle !== 0) {
             margin = 1.25 * this.options.gridTextSize / Math.sin(angle * Math.PI / 180.0);
             prevAngleMargin = startPos - margin;

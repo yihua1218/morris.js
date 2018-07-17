@@ -74,7 +74,11 @@ class Morris.Bar extends Morris.Grid
     prevLabelMargin = null
     prevAngleMargin = null
     for i in [0...@data.length]
-      row = @data[@data.length - 1 - i]
+      if @options.drawXAxisReversed
+        row = @data[i]
+      else
+        row = @data[@data.length - 1 - i]
+
       if not @options.horizontal
         label = @drawXAxisLabel(row._x, basePos, row.label)
       else
@@ -108,7 +112,19 @@ class Morris.Bar extends Morris.Grid
         maxSize = @el.height()
 
       # try to avoid overlaps
-      if (not prevLabelMargin? or
+      if @options.drawXAxisReversed and (not prevLabelMargin? or
+          startPos >= prevLabelMargin or
+          prevAngleMargin? and prevAngleMargin >= startPos) and
+         startPos >= 0 and (startPos + size) < maxSize
+        if angle != 0
+          margin = 1.25 * @options.gridTextSize /
+            Math.sin(angle * Math.PI / 180.0)
+          prevAngleMargin = startPos - margin
+        if not @options.horizontal
+          prevLabelMargin = startPos + size + @options.xLabelMargin
+        else
+          prevLabelMargin = startPos
+      else if not @options.drawXAxisReversed and (not prevLabelMargin? or
           prevLabelMargin >= startPos + size or
           prevAngleMargin? and prevAngleMargin >= startPos) and
          startPos >= 0 and (startPos + size) < maxSize
@@ -120,7 +136,6 @@ class Morris.Bar extends Morris.Grid
           prevLabelMargin = startPos - @options.xLabelMargin
         else
           prevLabelMargin = startPos
-
       else
         label.remove()
 
