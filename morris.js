@@ -2041,7 +2041,7 @@ Licensed under the BSD-2-Clause License.
     }
 
     Donut.prototype.redraw = function() {
-      var C, cx, cy, i, idx, labelColor, labelFontSizeText1, labelFontSizeText2, last, max_value, min, next, seg, total, value, w, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
+      var C, cx, cy, i, idx, labelColor, labelFontSizeText1, labelFontSizeText2, last, max_value, min, minWidth, next, seg, total, value, w, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
       this.raphael.clear();
       cx = this.el.width() / 2;
       cy = this.el.height() / 2;
@@ -2052,7 +2052,11 @@ Licensed under the BSD-2-Clause License.
         value = _ref[_i];
         total += value;
       }
-      min = 5 / (2 * w);
+      minWidth = 5;
+      if (typeof this.options.minWidth !== 'undefined') {
+        minWidth = this.options.minWidth;
+      }
+      min = minWidth / (2 * w);
       C = 1.9999 * Math.PI - min * this.data.length;
       last = 0;
       idx = 0;

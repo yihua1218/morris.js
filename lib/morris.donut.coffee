@@ -72,7 +72,12 @@ class Morris.Donut extends Morris.EventEmitter
     total = 0
     total += value for value in @values
 
-    min = 5 / (2 * w)
+    minWidth = 5
+
+    if typeof @options.minWidth != 'undefined'
+      minWidth = @options.minWidth
+
+    min = minWidth / (2 * w)
     C = 1.9999 * Math.PI - min * @data.length
 
     last = 0
