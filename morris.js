@@ -2061,7 +2061,7 @@ Licensed under the BSD-2-Clause License.
       for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
         value = _ref1[i];
         next = last + min + C * (value / total);
-        seg = new Morris.DonutSegment(cx, cy, w * 2, w, last, next, this.data[i].color || this.options.colors[idx % this.options.colors.length], this.options.backgroundColor, idx, this.raphael);
+        seg = new Morris.DonutSegment(cx, cy, w * 2, w, last, next, this.data[i].color || this.options.colors[idx % this.options.colors.length], this.options.backgroundColor, idx, this.options.strokeWidth, this.raphael);
         seg.render();
         this.segments.push(seg);
         seg.on('hover', this.select);
@@ -2159,7 +2159,7 @@ Licensed under the BSD-2-Clause License.
       text1bbox = this.text1.getBBox();
       text1scale = Math.min(maxWidth / text1bbox.width, maxHeightTop / text1bbox.height);
       this.text1.attr({
-        transform: "S" + text1scale + "," + text1scale + "," + (text1bbox.x + text1bbox.width / 2) + "," + (text1bbox.y + text1bbox.height)
+        transform: ("S" + text1scale + "," + text1scale + ",") + ("" + (text1bbox.x + text1bbox.width / 2) + "," + (text1bbox.y + text1bbox.height))
       });
       this.text2.attr({
         text: label2,
@@ -2168,7 +2168,7 @@ Licensed under the BSD-2-Clause License.
       text2bbox = this.text2.getBBox();
       text2scale = Math.min(maxWidth / text2bbox.width, maxHeightBottom / text2bbox.height);
       return this.text2.attr({
-        transform: "S" + text2scale + "," + text2scale + "," + (text2bbox.x + text2bbox.width / 2) + "," + text2bbox.y
+        transform: ("S" + text2scale + "," + text2scale + ",") + ("" + (text2bbox.x + text2bbox.width / 2) + "," + text2bbox.y)
       });
     };
 
@@ -2194,7 +2194,7 @@ Licensed under the BSD-2-Clause License.
   Morris.DonutSegment = (function(_super) {
     __extends(DonutSegment, _super);
 
-    function DonutSegment(cx, cy, inner, outer, p0, p1, color, backgroundColor, index, raphael) {
+    function DonutSegment(cx, cy, inner, outer, p0, p1, color, backgroundColor, index, strokeWidth, raphael) {
       this.cx = cx;
       this.cy = cy;
       this.inner = inner;
@@ -2202,6 +2202,7 @@ Licensed under the BSD-2-Clause License.
       this.color = color;
       this.backgroundColor = backgroundColor;
       this.index = index;
+      this.strokeWidth = strokeWidth;
       this.raphael = raphael;
       this.deselect = __bind(this.deselect, this);
       this.select = __bind(this.select, this);
@@ -2251,10 +2252,15 @@ Licensed under the BSD-2-Clause License.
     };
 
     DonutSegment.prototype.drawDonutSegment = function(path, fillColor, strokeColor, hoverFunction, clickFunction) {
+      var strokeWidth;
+      strokeWidth = 3;
+      if (typeof this.strokeWidth !== 'undefined') {
+        strokeWidth = this.strokeWidth;
+      }
       return this.raphael.path(path).attr({
         fill: fillColor,
         stroke: strokeColor,
-        'stroke-width': 3
+        'stroke-width': strokeWidth
       }).hover(hoverFunction).click(clickFunction);
     };
 
