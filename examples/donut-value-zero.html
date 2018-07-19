@@ -1,0 +1,37 @@
+<!doctype html>
+<head>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.2/raphael-min.js"></script>
+  <script src="../morris.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/prettify/r224/prettify.min.js"></script>
+  <script src="lib/example.js"></script>
+  <link rel="stylesheet" href="lib/example.css">
+  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/prettify/r224/prettify.min.css">
+  <link rel="stylesheet" href="../morris.css">
+</head>
+<body>
+<h1>Donut Chart, overwrite label</h1>
+<div id="graph"></div>
+<pre id="code" class="prettyprint linenums">
+Morris.Donut({
+  element: 'graph',
+  labelFontSize: {
+    text1: 20,
+    text2: 10,
+  },
+  exchangeLabel: true,
+  strokeWidth: 0,
+  overwriteLabel: {
+    value: 0,
+    label: 'Offline',
+    labelColor: 'rgba(210, 210, 210, 0.25)',
+  },
+  data: [
+    {value: 0, label: 'Online', labelColor: 'rgba(210, 210, 210, 0.25)', color: 'rgba(210, 210, 210, 0.25)'},
+  ],
+  formatter: function (x) { return x + "%"}
+}).on('click', function(i, row){
+  console.log(i, row);
+}).select(-1);
+</pre>
+</body>

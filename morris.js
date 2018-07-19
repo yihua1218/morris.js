@@ -2060,6 +2060,9 @@ Licensed under the BSD-2-Clause License.
       _ref1 = this.values;
       for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
         value = _ref1[i];
+        if (total === 0) {
+          total = value = 1;
+        }
         next = last + min + C * (value / total);
         seg = new Morris.DonutSegment(cx, cy, w * 2, w, last, next, this.data[i].color || this.options.colors[idx % this.options.colors.length], this.options.backgroundColor, idx, this.options.strokeWidth, this.raphael);
         seg.render();

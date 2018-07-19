@@ -78,7 +78,10 @@ class Morris.Donut extends Morris.EventEmitter
     last = 0
     idx = 0
     @segments = []
+
     for value, i in @values
+      if total is 0
+        total = value = 1
       next = last + min + C * (value / total)
       seg = new Morris.DonutSegment(
         cx, cy, w * 2, w, last, next,
