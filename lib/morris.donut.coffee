@@ -100,8 +100,13 @@ class Morris.Donut extends Morris.EventEmitter
     if @options.labelFontSize and @options.labelFontSize.text2
       labelFontSizeText2 = @options.labelFontSize.text2
 
-    @text1 = @drawEmptyDonutLabel(cx, cy - 10, @options.labelColor, labelFontSizeText1, 800)
-    @text2 = @drawEmptyDonutLabel(cx, cy + 10, @options.labelColor, labelFontSizeText2)
+    labelColor = @options.labelColor
+
+    if @options.overwriteLabel and @options.overwriteLabel.labelColor
+      labelColor = @options.overwriteLabel.labelColor
+
+    @text1 = @drawEmptyDonutLabel(cx, cy - 10, labelColor, labelFontSizeText1, 800)
+    @text2 = @drawEmptyDonutLabel(cx, cy + 10, labelColor, labelFontSizeText2)
 
     max_value = Math.max @values...
     idx = 0
@@ -139,6 +144,10 @@ class Morris.Donut extends Morris.EventEmitter
 
   # @private
   setLabels: (label1, label2) ->
+    if @options.overwriteLabel
+      label1 = @options.overwriteLabel.label
+      label2 = @options.overwriteLabel.value
+
     if @options.exchangeLabel
       l1 = label1
       l2 = label2
