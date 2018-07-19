@@ -9,7 +9,7 @@
 #     ]
 #   });
 class Morris.Donut extends Morris.EventEmitter
-  defaults:
+  defaults: {
     colors: [
       '#0B62A4'
       '#3980B5'
@@ -22,11 +22,11 @@ class Morris.Donut extends Morris.EventEmitter
       '#052C48'
       '#042135'
     ],
-    backgroundColor: '#FFFFFF', 
+    backgroundColor: '#FFFFFF',
     labelColor: '#000000',
     formatter: Morris.commas
     resize: false
-
+  }
   # Create and render a donut chart.
   #
   constructor: (options) ->
@@ -81,7 +81,7 @@ class Morris.Donut extends Morris.EventEmitter
     for value, i in @values
       next = last + min + C * (value / total)
       seg = new Morris.DonutSegment(
-        cx, cy, w*2, w, last, next,
+        cx, cy, w * 2, w, last, next,
         @data[i].color || @options.colors[idx % @options.colors.length],
         @options.backgroundColor, idx, @raphael)
       seg.render()
@@ -105,8 +105,10 @@ class Morris.Donut extends Morris.EventEmitter
     if @options.overwriteLabel and @options.overwriteLabel.labelColor
       labelColor = @options.overwriteLabel.labelColor
 
-    @text1 = @drawEmptyDonutLabel(cx, cy - 10, labelColor, labelFontSizeText1, 800)
-    @text2 = @drawEmptyDonutLabel(cx, cy + 10, labelColor, labelFontSizeText2)
+    @text1 = @drawEmptyDonutLabel(cx, cy - 10,
+      labelColor, labelFontSizeText1, 800)
+    @text2 = @drawEmptyDonutLabel(cx, cy + 10,
+      labelColor, labelFontSizeText2)
 
     max_value = Math.max @values...
     idx = 0
@@ -157,14 +159,24 @@ class Morris.Donut extends Morris.EventEmitter
     maxWidth = 1.8 * inner
     maxHeightTop = inner / 2
     maxHeightBottom = inner / 3
-    @text1.attr(text: label1, transform: '')
+    @text1.attr({ text: label1, transform: '' })
     text1bbox = @text1.getBBox()
-    text1scale = Math.min(maxWidth / text1bbox.width, maxHeightTop / text1bbox.height)
-    @text1.attr(transform: "S#{text1scale},#{text1scale},#{text1bbox.x + text1bbox.width / 2},#{text1bbox.y + text1bbox.height}")
-    @text2.attr(text: label2, transform: '')
+    text1scale = Math.min(
+      maxWidth / text1bbox.width,
+      maxHeightTop / text1bbox.height)
+    @text1.attr({
+      transform: "S#{text1scale},#{text1scale}," +
+        "#{text1bbox.x + text1bbox.width / 2},#{text1bbox.y + text1bbox.height}"
+    })
+    @text2.attr({ text: label2, transform: '' })
     text2bbox = @text2.getBBox()
-    text2scale = Math.min(maxWidth / text2bbox.width, maxHeightBottom / text2bbox.height)
-    @text2.attr(transform: "S#{text2scale},#{text2scale},#{text2bbox.x + text2bbox.width / 2},#{text2bbox.y}")
+    text2scale = Math.min(
+      maxWidth / text2bbox.width,
+      maxHeightBottom / text2bbox.height)
+    @text2.attr({
+      transform: "S#{text2scale},#{text2scale}," +
+      "#{text2bbox.x + text2bbox.width / 2},#{text2bbox.y}"
+    })
 
   drawEmptyDonutLabel: (xPos, yPos, color, fontSize, fontWeight) ->
     text = @raphael.text(xPos, yPos, '')
@@ -183,7 +195,8 @@ class Morris.Donut extends Morris.EventEmitter
 #
 # @private
 class Morris.DonutSegment extends Morris.EventEmitter
-  constructor: (@cx, @cy, @inner, @outer, p0, p1, @color, @backgroundColor, @index, @raphael) ->
+  constructor: (@cx, @cy, @inner, @outer, p0, p1,
+  @color, @backgroundColor, @index, @raphael) ->
     @sin_p0 = Math.sin(p0)
     @cos_p0 = Math.cos(p0)
     @sin_p1 = Math.sin(p1)
@@ -219,31 +232,32 @@ class Morris.DonutSegment extends Morris.EventEmitter
   render: ->
     @arc = @drawDonutArc(@hilight, @color)
     @seg = @drawDonutSegment(
-      @path, 
-      @color, 
-      @backgroundColor, 
+      @path,
+      @color,
+      @backgroundColor,
       => @fire('hover', @index),
       => @fire('click', @index)
     )
 
   drawDonutArc: (path, color) ->
     @raphael.path(path)
-      .attr(stroke: color, 'stroke-width': 2, opacity: 0)
+      .attr({ stroke: color, 'stroke-width': 2, opacity: 0 })
 
-  drawDonutSegment: (path, fillColor, strokeColor, hoverFunction, clickFunction) ->
+  drawDonutSegment: (path, fillColor, strokeColor,
+  hoverFunction, clickFunction) ->
     @raphael.path(path)
-      .attr(fill: fillColor, stroke: strokeColor, 'stroke-width': 3)
+      .attr({ fill: fillColor, stroke: strokeColor, 'stroke-width': 3 })
       .hover(hoverFunction)
       .click(clickFunction)
 
   select: =>
     unless @selected
-      @seg.animate(path: @selectedPath, 150, '<>')
-      @arc.animate(opacity: 1, 150, '<>')
+      @seg.animate({ path: @selectedPath }, 150, '<>')
+      @arc.animate({ opacity: 1 }, 150, '<>')
       @selected = true
 
   deselect: =>
     if @selected
-      @seg.animate(path: @path, 150, '<>')
-      @arc.animate(opacity: 0, 150, '<>')
+      @seg.animate({ path: @path }, 150, '<>')
+      @arc.animate({ opacity: 0 }, 150, '<>')
       @selected = false
