@@ -765,6 +765,7 @@ Licensed under the BSD-2-Clause License.
     };
 
     function Hover(options) {
+      var hoverHeight, hoverWidth;
       if (options == null) {
         options = {};
       }
@@ -772,9 +773,16 @@ Licensed under the BSD-2-Clause License.
       this.el = $("<div class='" + this.options["class"] + "'></div>");
       this.el.hide();
       this.options.parent.append(this.el);
+      hoverWidth = this.el.outerWidth();
+      hoverHeight = this.el.outerHeight();
+      console.log("parentWidth:", parentWidth);
+      console.log("parentHeight:", parentHeight);
+      console.log("hoverWidth:", hoverWidth);
+      console.log("hoverHeight:", hoverHeight);
     }
 
     Hover.prototype.update = function(html, x, y, centre_y) {
+      console.log("update:", x, y);
       if (!html) {
         return this.hide();
       } else {
@@ -789,11 +797,16 @@ Licensed under the BSD-2-Clause License.
     };
 
     Hover.prototype.moveTo = function(x, y, centre_y) {
-      var hoverHeight, hoverWidth, left, parentHeight, parentWidth, top;
+      var css, hoverHeight, hoverWidth, left, parentHeight, parentWidth, top;
+      console.log("moveTo:", x, y);
       parentWidth = this.options.parent.innerWidth();
       parentHeight = this.options.parent.innerHeight();
       hoverWidth = this.el.outerWidth();
       hoverHeight = this.el.outerHeight();
+      console.log("parentWidth:", parentWidth);
+      console.log("parentHeight:", parentHeight);
+      console.log("hoverWidth:", hoverWidth);
+      console.log("hoverHeight:", hoverHeight);
       left = Math.min(Math.max(0, x - hoverWidth / 2), parentWidth - hoverWidth);
       if (y != null) {
         if (centre_y === true) {
@@ -813,10 +826,13 @@ Licensed under the BSD-2-Clause License.
       } else {
         top = parentHeight / 2 - hoverHeight / 2;
       }
-      return this.el.css({
+      window.el = this.el;
+      css = {
         left: left + "px",
         top: parseInt(top) + "px"
-      });
+      };
+      console.log("css:", css);
+      return this.el.css(css);
     };
 
     Hover.prototype.show = function() {
@@ -2165,18 +2181,22 @@ Licensed under the BSD-2-Clause License.
       });
       text1bbox = this.text1.getBBox();
       text1scale = Math.min(maxWidth / text1bbox.width, maxHeightTop / text1bbox.height);
-      this.text1.attr({
-        transform: ("S" + text1scale + "," + text1scale + ",") + ("" + (text1bbox.x + text1bbox.width / 2) + "," + (text1bbox.y + text1bbox.height))
-      });
+      if (text1scale > 0) {
+        this.text1.attr({
+          transform: ("S" + text1scale + "," + text1scale + ",") + ("" + (text1bbox.x + text1bbox.width / 2) + ",") + ("" + (text1bbox.y + text1bbox.height))
+        });
+      }
       this.text2.attr({
         text: label2,
         transform: ''
       });
       text2bbox = this.text2.getBBox();
       text2scale = Math.min(maxWidth / text2bbox.width, maxHeightBottom / text2bbox.height);
-      return this.text2.attr({
-        transform: ("S" + text2scale + "," + text2scale + ",") + ("" + (text2bbox.x + text2bbox.width / 2) + "," + text2bbox.y)
-      });
+      if (text2scale > 0) {
+        return this.text2.attr({
+          transform: ("S" + text2scale + "," + text2scale + ",") + ("" + (text2bbox.x + text2bbox.width / 2) + "," + text2bbox.y)
+        });
+      }
     };
 
     Donut.prototype.drawEmptyDonutLabel = function(xPos, yPos, color, fontSize, fontWeight) {

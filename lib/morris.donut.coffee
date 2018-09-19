@@ -172,19 +172,22 @@ class Morris.Donut extends Morris.EventEmitter
     text1scale = Math.min(
       maxWidth / text1bbox.width,
       maxHeightTop / text1bbox.height)
-    @text1.attr({
-      transform: "S#{text1scale},#{text1scale}," +
-        "#{text1bbox.x + text1bbox.width / 2},#{text1bbox.y + text1bbox.height}"
-    })
+    if text1scale > 0
+      @text1.attr({
+        transform: "S#{text1scale},#{text1scale}," +
+          "#{text1bbox.x + text1bbox.width / 2}," +
+          "#{text1bbox.y + text1bbox.height}"
+      })
     @text2.attr({ text: label2, transform: '' })
     text2bbox = @text2.getBBox()
     text2scale = Math.min(
       maxWidth / text2bbox.width,
       maxHeightBottom / text2bbox.height)
-    @text2.attr({
-      transform: "S#{text2scale},#{text2scale}," +
-      "#{text2bbox.x + text2bbox.width / 2},#{text2bbox.y}"
-    })
+    if text2scale > 0
+      @text2.attr({
+        transform: "S#{text2scale},#{text2scale}," +
+        "#{text2bbox.x + text2bbox.width / 2},#{text2bbox.y}"
+      })
 
   drawEmptyDonutLabel: (xPos, yPos, color, fontSize, fontWeight) ->
     text = @raphael.text(xPos, yPos, '')
