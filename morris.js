@@ -765,7 +765,6 @@ Licensed under the BSD-2-Clause License.
     };
 
     function Hover(options) {
-      var hoverHeight, hoverWidth;
       if (options == null) {
         options = {};
       }
@@ -773,16 +772,9 @@ Licensed under the BSD-2-Clause License.
       this.el = $("<div class='" + this.options["class"] + "'></div>");
       this.el.hide();
       this.options.parent.append(this.el);
-      hoverWidth = this.el.outerWidth();
-      hoverHeight = this.el.outerHeight();
-      console.log("parentWidth:", parentWidth);
-      console.log("parentHeight:", parentHeight);
-      console.log("hoverWidth:", hoverWidth);
-      console.log("hoverHeight:", hoverHeight);
     }
 
     Hover.prototype.update = function(html, x, y, centre_y) {
-      console.log("update:", x, y);
       if (!html) {
         return this.hide();
       } else {
@@ -797,16 +789,11 @@ Licensed under the BSD-2-Clause License.
     };
 
     Hover.prototype.moveTo = function(x, y, centre_y) {
-      var css, hoverHeight, hoverWidth, left, parentHeight, parentWidth, top;
-      console.log("moveTo:", x, y);
+      var hoverHeight, hoverWidth, left, parentHeight, parentWidth, top;
       parentWidth = this.options.parent.innerWidth();
       parentHeight = this.options.parent.innerHeight();
       hoverWidth = this.el.outerWidth();
       hoverHeight = this.el.outerHeight();
-      console.log("parentWidth:", parentWidth);
-      console.log("parentHeight:", parentHeight);
-      console.log("hoverWidth:", hoverWidth);
-      console.log("hoverHeight:", hoverHeight);
       left = Math.min(Math.max(0, x - hoverWidth / 2), parentWidth - hoverWidth);
       if (y != null) {
         if (centre_y === true) {
@@ -826,13 +813,10 @@ Licensed under the BSD-2-Clause License.
       } else {
         top = parentHeight / 2 - hoverHeight / 2;
       }
-      window.el = this.el;
-      css = {
+      return this.el.css({
         left: left + "px",
         top: parseInt(top) + "px"
-      };
-      console.log("css:", css);
-      return this.el.css(css);
+      });
     };
 
     Hover.prototype.show = function() {
