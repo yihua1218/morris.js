@@ -1,6 +1,6 @@
 /* @license
 morris.js v0.5.1
-Copyright 2018 Olly Smith All rights reserved.
+Copyright 2019 Olly Smith All rights reserved.
 Licensed under the BSD-2-Clause License.
 */
 
@@ -200,7 +200,7 @@ Licensed under the BSD-2-Clause License.
     };
 
     Grid.prototype.setData = function(data, redraw) {
-      var e, flatEvents, from, idx, index, maxGoal, minGoal, ret, row, step, to, total, y, ykey, ymax, ymin, yval, _i, _len, _ref, _ref1;
+      var e, flatEvents, from, idx, index, maxGoal, minGoal, ret, row, segment, step, tmpMax, to, total, x, y, yAxisSpace, yMaxAbs, ykey, ymax, ymin, yval, _i, _j, _len, _ref, _ref1;
       if (redraw == null) {
         redraw = true;
       }
@@ -329,15 +329,22 @@ Licensed under the BSD-2-Clause License.
       }
       if (((_ref1 = this.options.axes) === true || _ref1 === 'both' || _ref1 === 'y') || this.options.grid === true) {
         if (this.options.ymax === this.gridDefaults.ymax && this.options.ymin === this.gridDefaults.ymin) {
-          this.grid = this.autoGridLines(this.ymin, this.ymax, this.options.numLines);
+          yMaxAbs = Math.abs(this.ymax);
+          tmpMax = Math.ceil(yMaxAbs / 4) * 4;
+          yAxisSpace = tmpMax / 4;
+          segment = [];
+          for (x = _j = 0; _j <= 4; x = ++_j) {
+            segment.push(x * yAxisSpace);
+          }
+          this.grid = segment;
           this.ymin = Math.min(this.ymin, this.grid[0]);
           this.ymax = Math.max(this.ymax, this.grid[this.grid.length - 1]);
         } else {
           step = (this.ymax - this.ymin) / (this.options.numLines - 1);
           this.grid = (function() {
-            var _j, _ref2, _ref3, _results;
+            var _k, _ref2, _ref3, _results;
             _results = [];
-            for (y = _j = _ref2 = this.ymin, _ref3 = this.ymax; step > 0 ? _j <= _ref3 : _j >= _ref3; y = _j += step) {
+            for (y = _k = _ref2 = this.ymin, _ref3 = this.ymax; step > 0 ? _k <= _ref3 : _k >= _ref3; y = _k += step) {
               _results.push(y);
             }
             return _results;
@@ -374,45 +381,6 @@ Licensed under the BSD-2-Clause License.
       } else {
         return boundaryOption;
       }
-    };
-
-    Grid.prototype.autoGridLines = function(ymin, ymax, nlines) {
-      var gmax, gmin, grid, smag, span, step, unit, y, ymag;
-      span = ymax - ymin;
-      ymag = Math.floor(Math.log(span) / Math.log(10));
-      unit = Math.pow(10, ymag);
-      gmin = Math.floor(ymin / unit) * unit;
-      gmax = Math.ceil(ymax / unit) * unit;
-      step = (gmax - gmin) / (nlines - 1);
-      if (unit === 1 && step > 1 && Math.ceil(step) !== step) {
-        step = Math.ceil(step);
-        gmax = gmin + step * (nlines - 1);
-      }
-      if (gmin < 0 && gmax > 0) {
-        gmin = Math.floor(ymin / step) * step;
-        gmax = Math.ceil(ymax / step) * step;
-      }
-      if (step < 1) {
-        smag = Math.floor(Math.log(step) / Math.log(10));
-        grid = (function() {
-          var _i, _results;
-          _results = [];
-          for (y = _i = gmin; step > 0 ? _i <= gmax : _i >= gmax; y = _i += step) {
-            _results.push(parseFloat(y.toFixed(1 - smag)));
-          }
-          return _results;
-        })();
-      } else {
-        grid = (function() {
-          var _i, _results;
-          _results = [];
-          for (y = _i = gmin; step > 0 ? _i <= gmax : _i >= gmax; y = _i += step) {
-            _results.push(y);
-          }
-          return _results;
-        })();
-      }
-      return grid;
     };
 
     Grid.prototype._calc = function() {
@@ -2000,6 +1968,7 @@ Licensed under the BSD-2-Clause License.
 
     function Donut(options) {
       this.resizeHandler = __bind(this.resizeHandler, this);
+      this.deselect = __bind(this.deselect, this);
       this.select = __bind(this.select, this);
       this.click = __bind(this.click, this);
       var row, s, _i, _len, _ref,
@@ -2016,7 +1985,7 @@ Licensed under the BSD-2-Clause License.
       if (this.el === null || this.el.length === 0) {
         throw new Error("Graph placeholder not found.");
       }
-      if (options.data === void 0 || options.data.length === 0) {
+      if (this.options.data === void 0 || this.options.data.length === 0) {
         return;
       }
       this.raphael = new Raphael(this.el[0]);
@@ -2028,10 +1997,10 @@ Licensed under the BSD-2-Clause License.
           return _this.timeoutId = window.setTimeout(_this.resizeHandler, 100);
         });
       }
-      this.setData(options.data);
+      this.setData(this.options.data);
       if (typeof this.options.defaultLabel !== 'undefined' && this.data[this.options.defaultLabel]) {
         row = this.data[this.options.defaultLabel];
-        this.setLabels(row.label, this.options.formatter(row.value, row));
+        this.setLabels(row.label, this.options.formatter(row.value, row), row.labelColor);
         _ref = this.segments;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           s = _ref[_i];
@@ -2045,7 +2014,6 @@ Licensed under the BSD-2-Clause License.
       this.raphael.clear();
       cx = this.el.width() / 2;
       cy = this.el.height() / 2;
-      w = (Math.min(cx, cy) - 10) / 3;
       total = 0;
       _ref = this.values;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2056,8 +2024,9 @@ Licensed under the BSD-2-Clause License.
       if (typeof this.options.minWidth !== 'undefined') {
         minWidth = this.options.minWidth;
       }
+      w = Math.abs((Math.min(cx, cy) - 10) / 3);
       min = minWidth / (2 * w);
-      C = 1.9999 * Math.PI - min * this.data.length;
+      C = Math.abs(1.9999 * Math.PI - min * this.data.length);
       last = 0;
       idx = 0;
       this.segments = [];
@@ -2105,6 +2074,18 @@ Licensed under the BSD-2-Clause License.
       return _results;
     };
 
+    Donut.prototype.hasOnlyOneSegment = function(values) {
+      return values.length === 1 || values.filter(function(value) {
+        return value !== 0;
+      }).length === 1;
+    };
+
+    Donut.prototype.isAllValuesEmpty = function(values) {
+      return values.every(function(value) {
+        return value === 0;
+      });
+    };
+
     Donut.prototype.setData = function(data) {
       var row;
       this.data = data;
@@ -2118,6 +2099,9 @@ Licensed under the BSD-2-Clause License.
         }
         return _results;
       }).call(this);
+      if (this.hasOnlyOneSegment(this.values) || this.isAllValuesEmpty(this.values)) {
+        this.options.strokeWidth = 0;
+      }
       return this.redraw();
     };
 
@@ -2126,7 +2110,7 @@ Licensed under the BSD-2-Clause License.
     };
 
     Donut.prototype.select = function(idx) {
-      var row, s, segment, _i, _len, _ref;
+      var row, s, segment, _fill_color, _i, _len, _ref;
       _ref = this.segments;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         s = _ref[_i];
@@ -2136,15 +2120,27 @@ Licensed under the BSD-2-Clause License.
       if (segment) {
         segment.select();
         row = this.data[idx];
+        _fill_color = row.labelColor || this.options.labelColor || '#5C5C5C';
         if (typeof this.options.lockLabel !== 'undefined' && this.data[this.options.lockLabel]) {
           row = this.data[this.options.lockLabel];
         }
-        return this.setLabels(row.label, this.options.formatter(row.value, row));
+        return this.setLabels(row.label, this.options.formatter(row.value, row), _fill_color);
       }
     };
 
-    Donut.prototype.setLabels = function(label1, label2) {
-      var inner, l1, l2, maxHeightBottom, maxHeightTop, maxWidth, text1bbox, text1scale, text2bbox, text2scale;
+    Donut.prototype.deselect = function() {
+      var s, _i, _len, _ref, _results;
+      _ref = this.segments;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        s = _ref[_i];
+        _results.push(s.deselect());
+      }
+      return _results;
+    };
+
+    Donut.prototype.setLabels = function(label1, label2, fill_color) {
+      var inner, l1, l2, maxHeightBottom, maxHeightTop, maxWidth, text1bbox, text1scale, text2bbox, text2scale, _default_fill;
       if (this.options.overwriteLabel) {
         label1 = this.options.overwriteLabel.label;
         label2 = this.options.overwriteLabel.value;
@@ -2155,13 +2151,15 @@ Licensed under the BSD-2-Clause License.
         label1 = l2;
         label2 = l1;
       }
+      _default_fill = fill_color || '#5C5C5C';
       inner = (Math.min(this.el.width() / 2, this.el.height() / 2) - 10) * 2 / 3;
       maxWidth = 1.8 * inner;
       maxHeightTop = inner / 2;
       maxHeightBottom = inner / 3;
       this.text1.attr({
         text: label1,
-        transform: ''
+        transform: '',
+        fill: fill_color
       });
       text1bbox = this.text1.getBBox();
       text1scale = Math.min(maxWidth / text1bbox.width, maxHeightTop / text1bbox.height);
@@ -2172,7 +2170,8 @@ Licensed under the BSD-2-Clause License.
       }
       this.text2.attr({
         text: label2,
-        transform: ''
+        transform: '',
+        fill: fill_color
       });
       text2bbox = this.text2.getBBox();
       text2scale = Math.min(maxWidth / text2bbox.width, maxHeightBottom / text2bbox.height);
@@ -2248,9 +2247,13 @@ Licensed under the BSD-2-Clause License.
       var _this = this;
       this.arc = this.drawDonutArc(this.hilight, this.color);
       return this.seg = this.drawDonutSegment(this.path, this.color, this.backgroundColor, function() {
-        return _this.fire('hover', _this.index);
+        return _this.fire('hover', _this.index, event);
       }, function() {
-        return _this.fire('click', _this.index);
+        return _this.fire('hoverout', _this.index, event);
+      }, function() {
+        return _this.fire('click', _this.index, event);
+      }, function() {
+        return _this.fire('mousemove', _this.index, event);
       });
     };
 
@@ -2262,7 +2265,7 @@ Licensed under the BSD-2-Clause License.
       });
     };
 
-    DonutSegment.prototype.drawDonutSegment = function(path, fillColor, strokeColor, hoverFunction, clickFunction) {
+    DonutSegment.prototype.drawDonutSegment = function(path, fillColor, strokeColor, hoverFunction, hoveroutFunction, clickFunction, mousemoveFunction) {
       var strokeWidth;
       strokeWidth = 3;
       if (typeof this.strokeWidth !== 'undefined') {
@@ -2272,7 +2275,7 @@ Licensed under the BSD-2-Clause License.
         fill: fillColor,
         stroke: strokeColor,
         'stroke-width': strokeWidth
-      }).hover(hoverFunction).click(clickFunction);
+      }).hover(hoverFunction, hoveroutFunction).click(clickFunction).mousemove(mousemoveFunction);
     };
 
     DonutSegment.prototype.select = function() {
