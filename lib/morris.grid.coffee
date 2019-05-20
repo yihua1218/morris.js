@@ -236,9 +236,8 @@ class Morris.Grid extends Morris.EventEmitter
         tmpMax = Math.ceil((yMaxAbs / 4)) * 4
         yAxisSpace = tmpMax / 4
         segment = []
-        for(i=0; i<=4; i++) {
-          segment.push(i * yAxisSpace)
-        }
+        for x in [0..4]
+          segment.push(x * yAxisSpace)
         @grid = segment
 
         @ymin = Math.min(@ymin, @grid[0])

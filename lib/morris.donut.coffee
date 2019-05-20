@@ -42,7 +42,7 @@ class Morris.Donut extends Morris.EventEmitter
       throw new Error("Graph placeholder not found.")
 
     # bail if there's no data
-    if options.data is undefined or options.data.length is 0
+    if @options.data is undefined or @options.data.length is 0
       return
 
     @raphael = new Raphael(@el[0])
@@ -52,13 +52,12 @@ class Morris.Donut extends Morris.EventEmitter
         if @timeoutId?
           window.clearTimeout @timeoutId
         @timeoutId = window.setTimeout @resizeHandler, 100
-
-    @setData options.data
+    @setData @options.data
 
     if typeof @options.defaultLabel != 'undefined' and
     @data[@options.defaultLabel]
       row = @data[@options.defaultLabel]
-      @setLabels(row.label, @options.formatter(row.value, row))
+      @setLabels(row.label, @options.formatter(row.value, row), row.labelColor)
       s.deselect() for s in @segments
 
   # Clear and redraw the chart.
@@ -67,7 +66,12 @@ class Morris.Donut extends Morris.EventEmitter
 
     cx = @el.width() / 2
     cy = @el.height() / 2
-    w = (Math.min(cx, cy) - 10) / 3
+    # defaultWidth = 180
+    # defaultHeight = 258
+    # if !cx
+    #   cx = defaultWidth
+    # if !cy
+    #   cy = defaultHeight
 
     total = 0
     total += value for value in @values
@@ -77,9 +81,9 @@ class Morris.Donut extends Morris.EventEmitter
     if typeof @options.minWidth != 'undefined'
       minWidth = @options.minWidth
 
+    w = Math.abs((Math.min(cx, cy) - 10) / 3)
     min = minWidth / (2 * w)
-    C = 1.9999 * Math.PI - min * @data.length
-
+    C = Math.abs(1.9999 * Math.PI - min * @data.length)
     last = 0
     idx = 0
     @segments = []
@@ -126,9 +130,21 @@ class Morris.Donut extends Morris.EventEmitter
         break
       idx += 1
 
+  hasOnlyOneSegment: (values) ->
+    return values.length is 1 or values.filter((value)->
+      value isnt 0
+    ).length is 1
+
+  isAllValuesEmpty: (values) ->
+    return values.every((value)->
+      value is 0
+    )
+
   setData: (data) ->
     @data = data
     @values = (parseFloat(row.value) for row in @data)
+    if @hasOnlyOneSegment(@values) or @isAllValuesEmpty(@values)
+      @options.strokeWidth = 0
     @redraw()
 
   # @private
@@ -143,17 +159,20 @@ class Morris.Donut extends Morris.EventEmitter
     if segment
       segment.select()
       row = @data[idx]
+      _fill_color = row.labelColor or @options.labelColor or '#5C5C5C'
 
       if typeof @options.lockLabel != 'undefined' and
       @data[@options.lockLabel]
         row = @data[@options.lockLabel]
 
-      @setLabels(row.label, @options.formatter(row.value, row))
+      @setLabels(row.label, @options.formatter(row.value, row), _fill_color)
 
+  deselect: =>
+    s.deselect() for s in @segments
 
 
   # @private
-  setLabels: (label1, label2) ->
+  setLabels: (label1, label2, fill_color) ->
     if @options.overwriteLabel
       label1 = @options.overwriteLabel.label
       label2 = @options.overwriteLabel.value
@@ -163,11 +182,12 @@ class Morris.Donut extends Morris.EventEmitter
       l2 = label2
       label1 = l2
       label2 = l1
+    _default_fill = fill_color or '#5C5C5C'
     inner = (Math.min(@el.width() / 2, @el.height() / 2) - 10) * 2 / 3
     maxWidth = 1.8 * inner
     maxHeightTop = inner / 2
     maxHeightBottom = inner / 3
-    @text1.attr({ text: label1, transform: '' })
+    @text1.attr({ text: label1, transform: '', fill: fill_color })
     text1bbox = @text1.getBBox()
     text1scale = Math.min(
       maxWidth / text1bbox.width,
@@ -178,7 +198,7 @@ class Morris.Donut extends Morris.EventEmitter
           "#{text1bbox.x + text1bbox.width / 2}," +
           "#{text1bbox.y + text1bbox.height}"
       })
-    @text2.attr({ text: label2, transform: '' })
+    @text2.attr({ text: label2, transform: '', fill: fill_color })
     text2bbox = @text2.getBBox()
     text2scale = Math.min(
       maxWidth / text2bbox.width,
@@ -246,8 +266,10 @@ class Morris.DonutSegment extends Morris.EventEmitter
       @path,
       @color,
       @backgroundColor,
-      => @fire('hover', @index),
-      => @fire('click', @index)
+      => @fire('hover', @index, event),
+      => @fire('hoverout', @index, event),
+      => @fire('click', @index, event),
+      => @fire('mousemove', @index, event)
     )
 
   drawDonutArc: (path, color) ->
@@ -255,7 +277,7 @@ class Morris.DonutSegment extends Morris.EventEmitter
       .attr({ stroke: color, 'stroke-width': 2, opacity: 0 })
 
   drawDonutSegment: (path, fillColor, strokeColor,
-  hoverFunction, clickFunction) ->
+  hoverFunction, hoveroutFunction, clickFunction, mousemoveFunction) ->
     strokeWidth = 3
 
     if typeof @strokeWidth != 'undefined'
@@ -267,8 +289,9 @@ class Morris.DonutSegment extends Morris.EventEmitter
         stroke: strokeColor,
         'stroke-width': strokeWidth
       })
-      .hover(hoverFunction)
+      .hover(hoverFunction, hoveroutFunction)
       .click(clickFunction)
+      .mousemove(mousemoveFunction)
 
   select: =>
     unless @selected
