@@ -25,7 +25,8 @@ class Morris.Donut extends Morris.EventEmitter
     backgroundColor: '#FFFFFF',
     labelColor: '#000000',
     formatter: Morris.commas
-    resize: false
+    resize: false,
+    cursor: 'pointer'
   }
   # Create and render a donut chart.
   #
@@ -95,7 +96,7 @@ class Morris.Donut extends Morris.EventEmitter
       seg = new Morris.DonutSegment(
         cx, cy, w * 2, w, last, next,
         @data[i].color || @options.colors[idx % @options.colors.length],
-        @options.backgroundColor, idx, @options.strokeWidth, @raphael)
+        @options.backgroundColor, idx, @options.strokeWidth, @raphael, @options.cursor)
       seg.render()
       @segments.push seg
       seg.on 'hover', @select
@@ -227,7 +228,7 @@ class Morris.Donut extends Morris.EventEmitter
 # @private
 class Morris.DonutSegment extends Morris.EventEmitter
   constructor: (@cx, @cy, @inner, @outer, p0, p1,
-  @color, @backgroundColor, @index, @strokeWidth, @raphael) ->
+  @color, @backgroundColor, @index, @strokeWidth, @raphael, @cursor) ->
     @sin_p0 = Math.sin(p0)
     @cos_p0 = Math.cos(p0)
     @sin_p1 = Math.sin(p1)
@@ -266,6 +267,7 @@ class Morris.DonutSegment extends Morris.EventEmitter
       @path,
       @color,
       @backgroundColor,
+      @cursor,
       => @fire('hover', @index, event),
       => @fire('hoverout', @index, event),
       => @fire('click', @index, event),
@@ -276,7 +278,7 @@ class Morris.DonutSegment extends Morris.EventEmitter
     @raphael.path(path)
       .attr({ stroke: color, 'stroke-width': 2, opacity: 0 })
 
-  drawDonutSegment: (path, fillColor, strokeColor,
+  drawDonutSegment: (path, fillColor, strokeColor, cursor
   hoverFunction, hoveroutFunction, clickFunction, mousemoveFunction) ->
     strokeWidth = 3
 
@@ -287,7 +289,8 @@ class Morris.DonutSegment extends Morris.EventEmitter
       .attr({
         fill: fillColor,
         stroke: strokeColor,
-        'stroke-width': strokeWidth
+        'stroke-width': strokeWidth,
+        cursor: cursor
       })
       .hover(hoverFunction, hoveroutFunction)
       .click(clickFunction)

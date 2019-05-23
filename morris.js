@@ -1963,7 +1963,8 @@ Licensed under the BSD-2-Clause License.
       backgroundColor: '#FFFFFF',
       labelColor: '#000000',
       formatter: Morris.commas,
-      resize: false
+      resize: false,
+      cursor: 'pointer'
     };
 
     function Donut(options) {
@@ -2037,7 +2038,7 @@ Licensed under the BSD-2-Clause License.
           total = value = 1;
         }
         next = last + min + C * (value / total);
-        seg = new Morris.DonutSegment(cx, cy, w * 2, w, last, next, this.data[i].color || this.options.colors[idx % this.options.colors.length], this.options.backgroundColor, idx, this.options.strokeWidth, this.raphael);
+        seg = new Morris.DonutSegment(cx, cy, w * 2, w, last, next, this.data[i].color || this.options.colors[idx % this.options.colors.length], this.options.backgroundColor, idx, this.options.strokeWidth, this.raphael, this.options.cursor);
         seg.render();
         this.segments.push(seg);
         seg.on('hover', this.select);
@@ -2204,7 +2205,7 @@ Licensed under the BSD-2-Clause License.
   Morris.DonutSegment = (function(_super) {
     __extends(DonutSegment, _super);
 
-    function DonutSegment(cx, cy, inner, outer, p0, p1, color, backgroundColor, index, strokeWidth, raphael) {
+    function DonutSegment(cx, cy, inner, outer, p0, p1, color, backgroundColor, index, strokeWidth, raphael, cursor) {
       this.cx = cx;
       this.cy = cy;
       this.inner = inner;
@@ -2214,6 +2215,7 @@ Licensed under the BSD-2-Clause License.
       this.index = index;
       this.strokeWidth = strokeWidth;
       this.raphael = raphael;
+      this.cursor = cursor;
       this.deselect = __bind(this.deselect, this);
       this.select = __bind(this.select, this);
       this.sin_p0 = Math.sin(p0);
@@ -2246,7 +2248,7 @@ Licensed under the BSD-2-Clause License.
     DonutSegment.prototype.render = function() {
       var _this = this;
       this.arc = this.drawDonutArc(this.hilight, this.color);
-      return this.seg = this.drawDonutSegment(this.path, this.color, this.backgroundColor, function() {
+      return this.seg = this.drawDonutSegment(this.path, this.color, this.backgroundColor, this.cursor, function() {
         return _this.fire('hover', _this.index, event);
       }, function() {
         return _this.fire('hoverout', _this.index, event);
@@ -2265,7 +2267,7 @@ Licensed under the BSD-2-Clause License.
       });
     };
 
-    DonutSegment.prototype.drawDonutSegment = function(path, fillColor, strokeColor, hoverFunction, hoveroutFunction, clickFunction, mousemoveFunction) {
+    DonutSegment.prototype.drawDonutSegment = function(path, fillColor, strokeColor, cursor, hoverFunction, hoveroutFunction, clickFunction, mousemoveFunction) {
       var strokeWidth;
       strokeWidth = 3;
       if (typeof this.strokeWidth !== 'undefined') {
@@ -2274,7 +2276,8 @@ Licensed under the BSD-2-Clause License.
       return this.raphael.path(path).attr({
         fill: fillColor,
         stroke: strokeColor,
-        'stroke-width': strokeWidth
+        'stroke-width': strokeWidth,
+        cursor: cursor
       }).hover(hoverFunction, hoveroutFunction).click(clickFunction).mousemove(mousemoveFunction);
     };
 
