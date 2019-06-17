@@ -197,7 +197,8 @@ class Morris.Donut extends Morris.EventEmitter
       @text1.attr({
         transform: "S#{text1scale},#{text1scale}," +
           "#{text1bbox.x + text1bbox.width / 2}," +
-          "#{text1bbox.y + text1bbox.height}"
+          "#{text1bbox.y + text1bbox.height}",
+        cursor: "text"
       })
     @text2.attr({ text: label2, transform: '', fill: fill_color })
     text2bbox = @text2.getBBox()
@@ -207,7 +208,8 @@ class Morris.Donut extends Morris.EventEmitter
     if text2scale > 0
       @text2.attr({
         transform: "S#{text2scale},#{text2scale}," +
-        "#{text2bbox.x + text2bbox.width / 2},#{text2bbox.y}"
+        "#{text2bbox.x + text2bbox.width / 2},#{text2bbox.y}",
+        cursor: "text"
       })
 
   drawEmptyDonutLabel: (xPos, yPos, color, fontSize, fontWeight) ->

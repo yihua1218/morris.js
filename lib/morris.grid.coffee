@@ -104,6 +104,7 @@ class Morris.Grid extends Morris.EventEmitter
     gridTextSize: 12
     gridTextFamily: 'sans-serif'
     gridTextWeight: 'normal'
+    gridTextCursor: 'text'
     hideHover: false
     yLabelFormat: null
     yLabelAlign: 'right'
@@ -388,6 +389,7 @@ class Morris.Grid extends Morris.EventEmitter
       .attr('font-size', @options.gridTextSize)
       .attr('font-family', @options.gridTextFamily)
       .attr('font-weight', @options.gridTextWeight)
+      .attr('cursor', @options.gridTextCursor)
       .rotate(angle)
     ret = tt.getBBox()
     tt.remove()
@@ -496,6 +498,7 @@ class Morris.Grid extends Morris.EventEmitter
       .attr('font-family', @options.gridTextFamily)
       .attr('font-weight', @options.gridTextWeight)
       .attr('fill', @options.gridTextColor)
+      .attr('cursor', @options.gridTextCursor)
     if @options.yLabelAlign == 'right'
       label.attr('text-anchor', 'end')
     else
@@ -507,6 +510,7 @@ class Morris.Grid extends Morris.EventEmitter
       .attr('font-family', @options.gridTextFamily)
       .attr('font-weight', @options.gridTextWeight)
       .attr('fill', @options.gridTextColor)
+      .attr('cursor', @options.gridTextCursor)
 
   drawGridLine: (path) ->
     @raphael.path(path)
