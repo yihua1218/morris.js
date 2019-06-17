@@ -177,6 +177,7 @@ Licensed under the BSD-2-Clause License.
       gridTextSize: 12,
       gridTextFamily: 'sans-serif',
       gridTextWeight: 'normal',
+      gridTextCursor: 'text',
       hideHover: false,
       yLabelFormat: null,
       yLabelAlign: 'right',
@@ -491,7 +492,7 @@ Licensed under the BSD-2-Clause License.
       if (angle == null) {
         angle = 0;
       }
-      tt = this.raphael.text(100, 100, text).attr('font-size', this.options.gridTextSize).attr('font-family', this.options.gridTextFamily).attr('font-weight', this.options.gridTextWeight).rotate(angle);
+      tt = this.raphael.text(100, 100, text).attr('font-size', this.options.gridTextSize).attr('font-family', this.options.gridTextFamily).attr('font-weight', this.options.gridTextWeight).attr('cursor', this.options.gridTextCursor).rotate(angle);
       ret = tt.getBBox();
       tt.remove();
       return ret;
@@ -618,7 +619,7 @@ Licensed under the BSD-2-Clause License.
 
     Grid.prototype.drawYAxisLabel = function(xPos, yPos, text) {
       var label;
-      label = this.raphael.text(xPos, yPos, text).attr('font-size', this.options.gridTextSize).attr('font-family', this.options.gridTextFamily).attr('font-weight', this.options.gridTextWeight).attr('fill', this.options.gridTextColor);
+      label = this.raphael.text(xPos, yPos, text).attr('font-size', this.options.gridTextSize).attr('font-family', this.options.gridTextFamily).attr('font-weight', this.options.gridTextWeight).attr('fill', this.options.gridTextColor).attr('cursor', this.options.gridTextCursor);
       if (this.options.yLabelAlign === 'right') {
         return label.attr('text-anchor', 'end');
       } else {
@@ -627,7 +628,7 @@ Licensed under the BSD-2-Clause License.
     };
 
     Grid.prototype.drawXAxisLabel = function(xPos, yPos, text) {
-      return this.raphael.text(xPos, yPos, text).attr('font-size', this.options.gridTextSize).attr('font-family', this.options.gridTextFamily).attr('font-weight', this.options.gridTextWeight).attr('fill', this.options.gridTextColor);
+      return this.raphael.text(xPos, yPos, text).attr('font-size', this.options.gridTextSize).attr('font-family', this.options.gridTextFamily).attr('font-weight', this.options.gridTextWeight).attr('fill', this.options.gridTextColor).attr('cursor', this.options.gridTextCursor);
     };
 
     Grid.prototype.drawGridLine = function(path) {
@@ -2166,7 +2167,8 @@ Licensed under the BSD-2-Clause License.
       text1scale = Math.min(maxWidth / text1bbox.width, maxHeightTop / text1bbox.height);
       if (text1scale > 0) {
         this.text1.attr({
-          transform: ("S" + text1scale + "," + text1scale + ",") + ("" + (text1bbox.x + text1bbox.width / 2) + ",") + ("" + (text1bbox.y + text1bbox.height))
+          transform: ("S" + text1scale + "," + text1scale + ",") + ("" + (text1bbox.x + text1bbox.width / 2) + ",") + ("" + (text1bbox.y + text1bbox.height)),
+          cursor: "text"
         });
       }
       this.text2.attr({
@@ -2178,7 +2180,8 @@ Licensed under the BSD-2-Clause License.
       text2scale = Math.min(maxWidth / text2bbox.width, maxHeightBottom / text2bbox.height);
       if (text2scale > 0) {
         return this.text2.attr({
-          transform: ("S" + text2scale + "," + text2scale + ",") + ("" + (text2bbox.x + text2bbox.width / 2) + "," + text2bbox.y)
+          transform: ("S" + text2scale + "," + text2scale + ",") + ("" + (text2bbox.x + text2bbox.width / 2) + "," + text2bbox.y),
+          cursor: "text"
         });
       }
     };
