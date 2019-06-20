@@ -55,11 +55,14 @@ class Morris.Donut extends Morris.EventEmitter
         @timeoutId = window.setTimeout @resizeHandler, 100
     @setData @options.data
 
-    if typeof @options.defaultLabel != 'undefined' and
-    @data[@options.defaultLabel]
+    if this.options.element is 'v2-deviceDonut' and typeof this.options.devicesChartDefaultLabel != 'undefined'
+      row = this.options.devicesChartDefaultLabel
+      this.setLabels row.label, this.options.formatter(row.value, row), row.labelColor
+    else if typeof @options.defaultLabel != 'undefined' and @data[@options.defaultLabel]
       row = @data[@options.defaultLabel]
-      @setLabels(row.label, @options.formatter(row.value, row), row.labelColor)
-      s.deselect() for s in @segments
+      @setLabels row.label, @options.formatter(row.value, row), row.labelColor
+  
+    s.deselect() for s in @segments
 
   # Clear and redraw the chart.
   redraw: ->
@@ -169,8 +172,14 @@ class Morris.Donut extends Morris.EventEmitter
       @setLabels(row.label, @options.formatter(row.value, row), _fill_color)
 
   deselect: =>
-    s.deselect() for s in @segments
+    if this.options.element is 'v2-deviceDonut' and typeof this.options.devicesChartDefaultLabel != 'undefined'
+      row = this.options.devicesChartDefaultLabel
+      this.setLabels row.label, this.options.formatter(row.value, row), row.labelColor
+    else if typeof this.options.defaultLabel != 'undefined' && this.data[this.options.defaultLabel]
+      row = this.data[this.options.defaultLabel]
+      this.setLabels row.label, this.options.formatter(row.value, row), row.labelColor
 
+    s.deselect() for s in @segments
 
   # @private
   setLabels: (label1, label2, fill_color) ->

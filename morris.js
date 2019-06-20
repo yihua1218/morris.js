@@ -2000,14 +2000,17 @@ Licensed under the BSD-2-Clause License.
         });
       }
       this.setData(this.options.data);
-      if (typeof this.options.defaultLabel !== 'undefined' && this.data[this.options.defaultLabel]) {
+      if (this.options.element === 'v2-deviceDonut' && typeof this.options.devicesChartDefaultLabel !== 'undefined') {
+        row = this.options.devicesChartDefaultLabel;
+        this.setLabels(row.label, this.options.formatter(row.value, row), row.labelColor);
+      } else if (typeof this.options.defaultLabel !== 'undefined' && this.data[this.options.defaultLabel]) {
         row = this.data[this.options.defaultLabel];
         this.setLabels(row.label, this.options.formatter(row.value, row), row.labelColor);
-        _ref = this.segments;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          s = _ref[_i];
-          s.deselect();
-        }
+      }
+      _ref = this.segments;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        s = _ref[_i];
+        s.deselect();
       }
     }
 
@@ -2131,7 +2134,14 @@ Licensed under the BSD-2-Clause License.
     };
 
     Donut.prototype.deselect = function() {
-      var s, _i, _len, _ref, _results;
+      var row, s, _i, _len, _ref, _results;
+      if (this.options.element === 'v2-deviceDonut' && typeof this.options.devicesChartDefaultLabel !== 'undefined') {
+        row = this.options.devicesChartDefaultLabel;
+        this.setLabels(row.label, this.options.formatter(row.value, row), row.labelColor);
+      } else if (typeof this.options.defaultLabel !== 'undefined' && this.data[this.options.defaultLabel]) {
+        row = this.data[this.options.defaultLabel];
+        this.setLabels(row.label, this.options.formatter(row.value, row), row.labelColor);
+      }
       _ref = this.segments;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
